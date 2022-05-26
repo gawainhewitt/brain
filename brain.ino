@@ -28,19 +28,19 @@ envelope1.hold(0);
 void loop() {
 // ***** uncomment for volume control
 
-//int knob = analogRead(volumePin); // knob = 0 to 1023
-//float gain = (float)knob / 1023.0;
+int knob = analogRead(volumePin); // knob = 0 to 1023
+float gain = (float)knob / 1023.0;
 // Serial.print("Gain is: ");
 // Serial.println(gain);
 
 // ***** if no software volume control then set gain
 
-float gain = 1.0;
+// float gain = 1.0;
 
 amp1.gain(gain);
 amp2.gain(gain);
-envelope1.sustain(gain);
-envelope2.sustain(gain);
+envelope1.sustain(1);
+envelope2.sustain(1);
 
 currtouched1 = mprBoard_A.touched();
 
@@ -49,7 +49,7 @@ if(digitalRead(rebootButton) == LOW){
 }
 
 //For A----------------------------------------------------------
-for (uint8_t i=0; i<12; i++) {
+for (uint8_t i=0; i<7; i++) {
     if ((currtouched1 & _BV(i)) && !(lasttouched1 & _BV(i)) ) {
     Serial.print(i); Serial.println(" touched of A");
     playSound(i);
