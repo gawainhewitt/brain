@@ -1,9 +1,4 @@
 /*
-Simple arduino sketch to show one MPR121 board working triggering wav files using the
-Teensy Audio shield on a Teensy 4
-
-Four note polyphonic with note stealing
-
 Use standard address is tied to Ground which gives the default address of 0x5A
 
 gawainhewitt.co.uk
