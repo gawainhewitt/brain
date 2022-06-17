@@ -4,10 +4,15 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
-const char *mySounds[] = {"ONE.WAV", "TWO.WAV", "THREE.WAV",
-                     "FOUR.WAV", "FIVE.WAV", "SIX.WAV", "SEVEN.WAV",
-                     "EIGHT.WAV", "NINE.WAV", "TEN.WAV", "ELEVEN.WAV",
-                     "TWELVE.WAV"}; // filenames are always uppercase 8.3 format
+int numberOfSensors = 7;
+int numberOfFiles = 0;
+
+String sdContents[200];
+String soundUsed[200];
+
+String mySounds[7]; 
+
+String name = "000.wav";
 
 // GUItool: begin automatically generated code
 #include <Audio.h>
@@ -45,6 +50,24 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=841,659
 #define SDCARD_MOSI_PIN  7
 #define SDCARD_SCK_PIN   14
 
+int countDirectory(File dir) {
+  int count_files = 0;
+    while(true) {
+      File entry = dir.openNextFile();
+      if (! entry) {
+        Serial.println("no more files");
+        return count_files;
+        break;
+      }
+      String file_name = entry.name();	//Get file name so that we can check 
+      if(file_name[4] == 'w'){
+        Serial.println(file_name);
+        sdContents[count_files] = file_name;
+        count_files += 1;
+      }
+    }
+}
+
 void init_player() {
 
   // Audio connections require memory to work.  For more
@@ -66,6 +89,25 @@ void init_player() {
       delay(500);
     }
   }
+
+  File root = SD.open("/");
+  
+  numberOfFiles = countDirectory(root);
+
+  Serial.print("number of files = ");
+  Serial.println(numberOfFiles);
+
+  for(int i = 0; i < numberOfFiles; i++){
+    Serial.print("sdContent = ");
+    Serial.println(sdContents[i]);
+    soundUsed[i] = sdContents[i];
+  }
+
+  for(int i = 0; i < numberOfSensors; i++){
+    mySounds[i] = sdContents[i];
+    soundUsed[i] = "true";
+  }
+
 }
 
 // Map of which voice has which key playing
@@ -75,12 +117,29 @@ long when[MAX_POLY];
 // Map of when we started the fade out so we know when to kill the note after the fade
 long faded_ms[MAX_POLY];
 
-void playSound(int track) {
-//    int player = get_free_voice();/
-//    Serial.print("notezzzz");
-//    Serial.println(player);
-
-playSdWav1.play(mySounds[track]);
-envelope1.noteOn();
-envelope2.noteOn();
+void changeSound(int track) {
+  bool reload = false;
+  if(soundUsed[numberOfFiles-1] == "true"){
+    for(int i = 0; i < numberOfFiles; i++){
+      soundUsed[i] = sdContents[i];
+    }
+  }
+  for(int i = 0; i < numberOfFiles; i++){
+    Serial.print("soundUsed = ");
+    Serial.println(soundUsed[i]);
+    if(soundUsed[i] != "true"){
+      Serial.print("are we here?");
+      mySounds[track] = sdContents[i];
+      soundUsed[i] = "true";
+      return;
+    }
+  }
 }
+
+void playSound(int track) {
+  playSdWav1.play(mySounds[track].c_str());
+  envelope1.noteOn();
+  envelope2.noteOn();
+  changeSound(track);
+}
+
