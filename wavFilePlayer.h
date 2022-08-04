@@ -4,22 +4,16 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
-int numberOfSensors = 7;
+const int numberOfSensors = 7;
+const int allSensorsBehaveAsOne = 1; // if this number is 1 then all sensors will behave as one. If it is number of sensors then each is assigned its own file and is independant
 int numberOfFiles = 0;
 
 String sdContents[200];
 String soundUsed[200];
 
-String mySounds[7]; 
+String mySounds[allSensorsBehaveAsOne]; 
 
 String name = "000.wav";
-
-// GUItool: begin automatically generated code
-#include <Audio.h>
-#include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
-#include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
 #include <Audio.h>
@@ -103,7 +97,7 @@ void init_player() {
     soundUsed[i] = sdContents[i];
   }
 
-  for(int i = 0; i < numberOfSensors; i++){
+  for(int i = 0; i < allSensorsBehaveAsOne; i++){
     mySounds[i] = sdContents[i];
     soundUsed[i] = "true";
   }
@@ -128,7 +122,6 @@ void changeSound(int track) {
     Serial.print("soundUsed = ");
     Serial.println(soundUsed[i]);
     if(soundUsed[i] != "true"){
-      Serial.print("are we here?");
       mySounds[track] = sdContents[i];
       soundUsed[i] = "true";
       return;
@@ -137,9 +130,9 @@ void changeSound(int track) {
 }
 
 void playSound(int track) {
-  playSdWav1.play(mySounds[track].c_str());
+  playSdWav1.play(mySounds[0].c_str());
   envelope1.noteOn();
   envelope2.noteOn();
-  changeSound(track);
+  changeSound(0);
 }
 

@@ -15,4 +15,8 @@ void init_mpr121()
     }
     Serial.println("MPR121 A found!");
 
+    mprBoard_A.writeRegister(MPR121_ECR, 0x00); // stop board
+    mprBoard_A.setThreshholds(30, 12);   //set sensitivity - also note spelling mistake
+    mprBoard_A.writeRegister(MPR121_ECR, 0x8F); //start board
+
 }
