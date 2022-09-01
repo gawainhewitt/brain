@@ -27,7 +27,7 @@ envelope1.hold(0);
 void loop() {
 // ***** uncomment for volume control
 
-int knob = analogRead(volumePin); // knob = 0 to 1023
+int knob = analogRead(volumePin) - 200; // knob = 0 to 1023
 float gain = (float)knob / 1023.0;
 // Serial.print("Gain is: ");
 // Serial.println(gain);
